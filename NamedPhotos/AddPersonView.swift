@@ -12,10 +12,9 @@ struct AddPersonView: View {
     @Environment(\.dismiss) var dismiss
     @ObservedObject var viewModel: ViewModel
 
-    @State private var image: Image?
-    @State private var inputUIImage: UIImage?
-    @State private var savingUIImage: UIImage?
-    @State private var showingImagePicker = false
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var selectedUIImage: UIImage?
+    @State private var selectedViewImage: Image?
     @State private var personName = ""
 
     init(viewModel: ViewModel) {
@@ -29,35 +28,33 @@ struct AddPersonView: View {
                     .textFieldStyle(.roundedBorder)
                     .padding()
 
+                PhotosPicker("Tap to select photo", selection: $selectedItem, matching: .images)
+                
                 ZStack {
                     Rectangle()
-                        .fill(.secondary)
+                        .fill(.white)
+                        .border(.secondary)
                         .frame(width: 300, height: 300)
-                    Text("Tap to select photo")
-                        .foregroundColor(.white)
-                        .font(.headline)
-                    image?
+                    Text("Select a photo")
+                        .foregroundStyle(.secondary)
+                        .frame(width: 300, height: 300)
+                    selectedViewImage?
                         .resizable()
                         .scaledToFit()
                         .frame(width: 300, height: 300)
                 }
-                .onTapGesture {
-                    showingImagePicker = true
-                }
             }
-            .onChange(of: inputUIImage) { _ in loadImage() }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(image: $inputUIImage)
-//                PhotosPicker("", selection: $inputUIImage, matching: .images)
+            .onChange(of: selectedItem) {
+                loadImage()
             }
             .toolbar {
                 ToolbarItem(placement: .automatic) {
                     Button("Save") {
-                        viewModel.addPerson(name: personName, inputUIImage: savingUIImage)
+                        viewModel.addPerson(name: personName, inputUIImage: selectedUIImage)
                         viewModel.updateView()
                         dismiss()
                     }
-                    .disabled(inputUIImage == nil)
+                    .disabled(selectedUIImage == nil)
                     .disabled(personName == "")
                 }
                 ToolbarItem(placement: .cancellationAction) {
@@ -70,9 +67,19 @@ struct AddPersonView: View {
     }
 
     func loadImage() {
-        guard let inputUIImage = inputUIImage else { return }
-        image = Image(uiImage: inputUIImage)
-        savingUIImage = inputUIImage
+        Task {
+            // turning the selectedItem (PhotosPickerItem) into image(Data)
+            guard let imageData = try await selectedItem?.loadTransferable(type: Data.self) else { return }
+
+            // creating an image(UIImage) from image(Data)
+            guard let tempUIImage = UIImage(data: imageData) else { return }
+            selectedUIImage = tempUIImage
+            
+            // creating an image(Image) from image(UIImage)
+            let tempViewImage = Image(uiImage: tempUIImage)
+            selectedViewImage = tempViewImage
+            
+        }
     }
 }
 
