@@ -5,12 +5,6 @@
 //  Created by James Cao on 3/26/25.
 //
 
-/*
- Todo:
- add detailed view
- get sorting on front page working (currently adds most recent to bottom of list)
- */
-
 import SwiftUI
 
 struct ContentView: View {
@@ -22,9 +16,11 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(viewModel.namedList) { person in
-                    PersonRowView(person: person)
-                        .padding(-15)
+                ForEach(viewModel.namedList.sorted(by: <)) { person in
+                    NavigationLink (destination: DetailedView(currPerson: person)) {
+                        PersonRowView(person: person)
+                            .padding(-15)
+                    }
                 }
                 .onDelete { index in
                     viewModel.removePerson(at: index)

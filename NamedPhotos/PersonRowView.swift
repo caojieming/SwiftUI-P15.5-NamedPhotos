@@ -22,7 +22,6 @@ struct PersonRowView: View {
                 .shadow(radius: 2)
             Text(person.name)
                 .font(.title2)
-            Spacer()
         }
         .onAppear(perform: loadImage)
     }
