@@ -39,9 +39,9 @@ import UIKit
     }
     
     // adds a new person (name and photo) to savePath
-    func addPerson(name: String, inputUIImage: UIImage?) {
+    func addPerson(name: String, inputUIImage: UIImage?, location: Coordinate) {
         guard let imageData = inputUIImage?.jpegData(compressionQuality: 0.8) else { return }
-        let newPerson = Person(name: name, avatar: imageData)
+        let newPerson = Person(name: name, avatar: imageData, location: location)
         self.namedList.append(newPerson)
         saveChanges()
     }

@@ -6,9 +6,18 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct DetailedView: View {
     let currPerson: Person
+    @State private var map: MKCoordinateRegion
+    let coord: CLLocationCoordinate2D
+    
+    init(currPerson: Person) {
+        self.currPerson = currPerson
+        self.coord = currPerson.location.convertToLC2D()
+        self.map = MKCoordinateRegion(center: self.coord, span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2))
+    }
     
     var body: some View {
         NavigationView {
@@ -19,7 +28,11 @@ struct DetailedView: View {
                     .border(.secondary)
                     .padding()
                 
-                Spacer()
+//                Spacer()
+                
+                Map {
+                    Marker("\(currPerson.name)", coordinate: coord)
+                }
             }
             .navigationTitle("\(currPerson.name)")
         } // NavigationView

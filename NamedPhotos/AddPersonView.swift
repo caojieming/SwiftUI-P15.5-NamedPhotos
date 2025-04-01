@@ -21,6 +21,8 @@ struct AddPersonView: View {
         self.viewModel = viewModel
     }
     
+    let locationFetcher = LocationFetcher()
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -45,12 +47,18 @@ struct AddPersonView: View {
                 }
             }
             .onChange(of: selectedItem) {
+                locationFetcher.start()
                 loadImage()
             }
             .toolbar {
                 ToolbarItem(placement: .automatic) {
                     Button("Save") {
-                        viewModel.addPerson(name: personName, inputUIImage: selectedUIImage)
+                        if let location = locationFetcher.lastKnownLocation {
+                            viewModel.addPerson(name: personName, inputUIImage: selectedUIImage, location: Coordinate.convertFromLC2D(location))
+                        } else {
+                            viewModel.addPerson(name: personName, inputUIImage: selectedUIImage, location: Coordinate(latitude: 0.0, longitude: 0.0))
+                        }
+                        
                         viewModel.updateView()
                         dismiss()
                     }
