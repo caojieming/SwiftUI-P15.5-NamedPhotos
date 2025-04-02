@@ -50,7 +50,7 @@ struct Coordinate: Codable {
     }
     
     static func convertFromLC2D (_ coord: CLLocationCoordinate2D) -> Coordinate {
-        return Coordinate(latitude: coord.latitude, longitude: coord.latitude)
+        return Coordinate(latitude: coord.latitude, longitude: coord.longitude)
     }
     
 //    static func ==(lhs: Coordinate, rhs: Coordinate) -> Bool {

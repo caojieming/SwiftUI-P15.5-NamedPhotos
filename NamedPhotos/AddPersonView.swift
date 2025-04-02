@@ -55,8 +55,12 @@ struct AddPersonView: View {
                     Button("Save") {
                         if let location = locationFetcher.lastKnownLocation {
                             viewModel.addPerson(name: personName, inputUIImage: selectedUIImage, location: Coordinate.convertFromLC2D(location))
+//                            print("Person added, name: \(personName)")
+//                            print("Location detected: \(location)")
                         } else {
                             viewModel.addPerson(name: personName, inputUIImage: selectedUIImage, location: Coordinate(latitude: 0.0, longitude: 0.0))
+//                            print("Person added, name: \(personName)")
+//                            print("Failed to fetch location, defaulting to (0,0)")
                         }
                         
                         viewModel.updateView()
